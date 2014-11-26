@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX_SEQ 4 + 1
+#define MAX_RIGA 100 + 1
+#define MAX_POS 10
+
+typedef struct t_sequenze{
+	char sequenza[MAX_SEQ];
+	int len;
+	int occorrenze;
+	int posizioni[MAX_POS];
+} t_sequenze;
+
+int main(int argc, char *argv[])
+{
+	//Struttura dati
+	t_sequenze *sequenze;
+	char riga[MAX_RIGA];
+	char parola[MAX_RIGA], *p;
+	int n;
+	int i,j;
+	int c = 0;
+	int offset;
+	FILE *fp;
+
+	//Controllo argomenti
+	if(argc < 3){
+		fprintf(stderr, "Errore negli argomenti!\nUso: 2.exe <file_testo> <file_sequenze>\n");
+		return -1;
+	}
+
+	//Apro file sequenze
+	if((fp = fopen(argv[2],"r")) == NULL){
+		fprintf(stderr, "Impossibile aprire il file %s\n", argv[2]);
+		return -2;
+	}
+
+	//Leggo file sequenze
+	fscanf(fp, "%d", &n);
+
+	sequenze = (t_sequenze *) malloc(n * sizeof(t_sequenze));
+
+	for(i=0; i<n; i++)
+	{
+		fscanf(fp, "%s", sequenze[i].sequenza);
+		sequenze[i].occorrenze = 0;
+		sequenze[i].len = strlen(sequenze[i].sequenza);
+	}
+	
+	fclose(fp);
+
+	//Apro testo
+	if((fp = fopen(argv[1],"r")) == NULL){
+		fprintf(stderr, "Impossibile aprire il file %s\n", argv[1]);
+		return -3;
+	}
+
+	while( fgets(riga, MAX_RIGA, fp) != NULL )
+	{
+		p = riga;
+		//Per ogni parola
+		while(sscanf(p,"%s%n", parola, &offset) > 0)
+		{
+			p += offset;
+			c++;
+			//Per tutte le sequenze
+			for(i=0; i<n; i++)
+			{
+				for(j=0; sequenze[i].sequenza[j] == parola[j] && j<sequenze[i].len; j++);
+				if(j == sequenz[i].len && sequenze[i].occorrenze < MAX_POS)
+				{
+					sequenze[i].posizioni[sequenze[i].occorrenze++] = c;		
+				}	
+			}
+		}
+	}	
+
+
+}

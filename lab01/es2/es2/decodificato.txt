@@ -1,0 +1,6 @@
+Questo e' solo un esempio di quello che il programma deve ottenere.
+L'esempio e' corto, ma si potrebbe facilmente produrre un esempio piu' lungo.
+Il programma deve essere in grado di generare esattamente questo file.
+Si noti che il programma deve anche rispettare il formato del file.
+Per esempio, nel file potrebbero essere presenti piu' caratteri di spaziatura
+contigui, come qui, ed essi devono essere riportati senza modifiche!

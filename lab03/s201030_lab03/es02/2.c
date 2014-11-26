@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char *argv[])
+{
+	int **m1, **m2, **p;			//Matrice 1, matrice 2 e matrice prodotto
+	int r1, c1, r2, c2;			//Dimensioni delle matrici
+	int i,j,k;				//Variabili per cicli
+	int s;					//Per memorizzare la somma della moltipl. riga x colonna
+	FILE *fp;
+
+	//Controllo argomenti
+	if(argc < 4)
+	{
+		fprintf(stderr, "Errore nei parametri!\nUso: ./1 <file matrice 1> <file matrice 2> <file out>\n");
+		return -1;
+	}
+	
+	//=======Apro file m1=======
+	if((fp = fopen(argv[1],"r")) == NULL){
+		fprintf(stderr, "Impossibile aprire il file %s\n", argv[1]);
+		return -2;
+	}
+	fscanf(fp, "%d %d", &r1, &c1);
+	//Alloco memoria
+	m1 = (int **) malloc(r1 * sizeof(int *));
+	for(i=0; i<c1; i++) m1[i] = (int *) malloc(c1 * sizeof(int));
+	//Leggo i dati
+	for(i=0; i<r1; i++)
+		for(j=0; j<c1; j++)
+			fscanf(fp, "%d", &m1[i][j]);
+	fclose(fp);
+	
+	//=======Apro file m2=======
+	if((fp = fopen(argv[2],"r")) == NULL){
+		fprintf(stderr, "Impossibile aprire il file %s\n", argv[2]);
+		return -3;
+	}
+	fscanf(fp, "%d %d", &r2, &c2);
+	
+	//Controllo che le matrici siano moltiplicabili
+	if(c1 != r2){
+		fprintf(stderr, "Impossibile moltiplicare le matrici!\n");
+		return -4;
+	}
+	
+	//Alloco memoria
+	m2 = (int **) malloc(r2 * sizeof(int *));
+	for(i=0; i<c2; i++) m2[i] = (int *) malloc(c2 * sizeof(int));
+	//Leggo i dati
+	for(i=0; i<r2; i++)
+		for(j=0; j<c2; j++)
+			fscanf(fp, "%d", &m2[i][j]);
+	fclose(fp);
+	
+	//Alloco matrice p
+	p = (int **) malloc(r1 * sizeof(int *));
+	for(i=0; i<c2; i++) p[i] = (int *) malloc(c2 * sizeof(int));
+	
+	//Moltiplico le matrici
+	for(i=0; i<r1; i++)
+	{
+		for(j=0; j<c2; j++)
+		{
+			s=0;
+			for(k = 0; k<c1; k++)
+				s += m1[i][k] * m2[k][j];
+		p[i][j] = s;
+		}		
+	}
+	
+	//Stampo risultato 
+	if((fp = fopen(argv[3],"w")) == NULL){
+		fprintf(stderr, "Impossibile creare il file %s\n", argv[3]);
+		return -5;
+	}
+	fprintf(fp,"%d %d\n",r1,c2);
+	for(i=0; i<r1; i++)
+	{
+		for(j=0; j<c2; j++)
+			fprintf(fp,"%d\t",p[i][j]);
+		fprintf(fp,"\n");
+	}
+	
+	return 0;
+}

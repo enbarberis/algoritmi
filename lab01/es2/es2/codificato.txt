@@ -1,0 +1,6 @@
+Questo e' solo un $2 di quello che il $5 deve ottenere.
+L'$2 e' corto, ma si potrebbe facilmente produrre un $2 piu' lungo.
+Il $5 deve $19 in grado di generare esattamente questo file.
+Si noti che il $5 deve anche rispettare il formato del file.
+Per $2, nel file potrebbero $19 presenti piu' caratteri di spaziatura
+contigui, come qui, ed essi devono $19 riportati senza modifiche!
