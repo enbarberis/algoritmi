@@ -1,0 +1,5 @@
+4
+rasoio		0.150	8
+medicine	0.300	10
+cambio		1.500	6
+fotocamera	0.250	9

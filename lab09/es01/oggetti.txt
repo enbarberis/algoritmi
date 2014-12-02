@@ -1,8 +1,13 @@
-7
+12
 rasoio			0.150 	8
 medicine 		0.300 	10
 cambio			1.500 	6
 fotocamera 		0.250 	9
 pantaloni 		1.200 	4
-camicia			0.500 	3
+camicia1		0.500 	3
 giaccone 		3.500 	1
+scarpe			0.600	1
+felpa			0.500	1
+cravatta		0.100	1
+camicia2		0.400	1
+camicia3		0.400	1

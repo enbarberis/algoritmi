@@ -9,7 +9,7 @@ typedef struct t_oggetto{
 	int preso;
 } t_oggetto;
 
-int max_valore(t_oggetto *oggetto, int i, float max_peso);
+void zaino(t_oggetto *oggetto, int i, int n, float peso, int *soluzione, int *max_val);
 
 int main(int argc, char **argv)
 {
@@ -17,6 +17,8 @@ int main(int argc, char **argv)
 	float max_bagaglio;	//Peso max del bagaglio
 	float max_valigie;	//Peso max delle valigie
 	t_oggetto *oggetto;	//Vettore degli oggetti
+	int *soluzione;		//Soluzione del problema dello zaino (cosa prendere)
+	int max_val = -1;	//valore massimo per il bagaglio
 	int i;			//Var. per cicilo for
 	FILE *fp;		//Per lettura e scrittura file
 
@@ -36,41 +38,49 @@ int main(int argc, char **argv)
 
 	fscanf(fp,"%d", &n);
 	oggetto = (t_oggetto *) malloc(n * sizeof(t_oggetto));
+	soluzione = (int *) malloc(n * sizeof(int));
+
 	for(i=0; i<n; i++)
-	{
 		fscanf(fp,"%s %f %d", oggetto[i].nome, &oggetto[i].peso, &oggetto[i].valore);
-		oggetto[i].preso = 0;
-	}
-	
-	printf("\nValore massimo trasportabile nel bagaglio: %d\nOggetti nel bagaglio:\n", max_valore(oggetto, n-1, max_bagaglio));
+
+	zaino(oggetto, 0, n, max_bagaglio, soluzione, &max_val);
+
+	printf("\nValore massimo trasportabile nel bagaglio: %d\nOggetti nel bagaglio:\n", max_val); 
 	for(i=0; i<n; i++)
-		if(oggetto[i].preso)
+		if(oggetto[i].preso = soluzione[i])
 			printf("- %s\n", oggetto[i].nome);
-	
+
 	free(oggetto);
+	free(soluzione);
+
 	return 0;
 }
 
-int max_valore(t_oggetto *oggetto, int i, float max_peso)
+void zaino(t_oggetto *oggetto, int i, int n, float peso, int *soluzione, int *max_val)
 {
-	if(i < 0)
-		return 0;
-	if(max_peso == 0)
-		return 0;
-	if(oggetto[i].peso > max_peso)
-		return max_valore(oggetto, i-1, max_peso);
-	
-	int ris1 = max_valore(oggetto, i-1, max_peso);
-	int ris2 = max_valore(oggetto, i-1, max_peso - oggetto[i].peso) + oggetto[i].valore;
-	
-	if(ris1 > ris2)
+	if(i >= n)	//se non ci sono piu` oggetti da considerare
 	{
-		oggetto[i].preso = 0;
-		return ris1;
+		int j, somma = 0;
+		
+		for(j=0; j<n; j++)
+			if(oggetto[j].preso)
+				somma += oggetto[j].valore;
+
+		if(somma > *max_val)
+		{
+			*max_val = somma;
+			for(j=0; j<n; j++)
+				soluzione[j] = oggetto[j].preso;
+		}
 	}
 	else
 	{
-		oggetto[i].preso = 1;
-		return ris2;
+		oggetto[i].preso = 0;
+		zaino(oggetto, i+1, n, peso, soluzione, max_val);
+		if(peso - oggetto[i].peso >= 0)	//se ci sta ancora
+		{
+			oggetto[i].preso = 1;
+			zaino(oggetto, i+1, n, peso - oggetto[i].peso, soluzione, max_val);
+		}
 	}
 }
