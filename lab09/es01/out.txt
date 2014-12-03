@@ -1,0 +1,30 @@
+Valore massimo trasportabile nel bagaglio: 42
+Oggetti nel bagaglio:
+- rasoio
+- medicine
+- fotocamera
+- orologio
+- caricatore
+
+Numero di valigie minime: 3
+
+Valigia:
+- forbici
+- scarpe
+- giaccone
+Peso totale valigia: 4.000
+
+Valigia:
+- cibo
+- portatile
+- pantaloni
+- cravatta
+- phon
+Peso totale valigia: 3.900
+
+Valigia:
+- pantalone
+- cambio
+- asciugamani
+- camicia
+Peso totale valigia: 3.500
