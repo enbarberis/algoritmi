@@ -1,0 +1,2 @@
+risorsa_A
+risorsa_B
