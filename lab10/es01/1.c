@@ -13,7 +13,8 @@ typedef struct t_compito{
 	int  risorsa;
 } t_compito;
 
-void ric_partition(int pos, t_compito *compito, int n, char ** risorsa, int k, int *scarto_min, int *soluzione);
+void ric_partition(int pos, t_compito *compito, int n, int k, int *scarto_min, int *soluzione);
+void gre_partition(t_compito *compito, int n, int k, int *scarto_min, int *soluzione);
 
 int main(int argc, char **argv)
 {
@@ -74,11 +75,14 @@ int main(int argc, char **argv)
 	fclose(fp);
 
 	#if SOLUZIONE==RICORSIVA
-	ric_partition(0, compito, n, risorsa, k, &scarto_min, soluzione);
+	ric_partition(0, compito, n, k, &scarto_min, soluzione);
+	#endif
+	#if SOLUZIONE==GREEDY
+	gre_partition(compito, n, k, &scarto_min, soluzione);
 	#endif
 
 	//stampa del risultato
-	printf("Scarto minimo: %d\n", scarto_min);
+	printf("Scarto: %d\n", scarto_min);
 	for(i=0; i<k; i++)
 	{
 		printf("%s\n", risorsa[i]);
@@ -99,7 +103,7 @@ int main(int argc, char **argv)
 	return 0;	
 }
 
-void ric_partition(int pos, t_compito *compito, int n, char ** risorsa, int k, int *scarto_min, int *soluzione)
+void ric_partition(int pos, t_compito *compito, int n, int k, int *scarto_min, int *soluzione)
 {
 	if(pos >= n)
 	{
@@ -132,7 +136,63 @@ void ric_partition(int pos, t_compito *compito, int n, char ** risorsa, int k, i
 		for(i = 0; i<k; i++)
 		{
 			compito[pos].risorsa = i;
-			ric_partition(pos+1, compito, n, risorsa, k, scarto_min, soluzione);
+			ric_partition(pos+1, compito, n, k, scarto_min, soluzione);
 		}
 	}
+}
+
+void gre_partition(t_compito *compito, int n, int k, int *scarto_min, int *soluzione)
+{
+	int parte = 0;
+	int diff_ris[k];
+	int i,j;
+	int min, min_index, max;
+
+	for(i=0; i<k; i++)
+		diff_ris[i] = 0;
+
+	for(i=0; i<n; i++)
+		parte += compito[i].difficolta;
+	parte = parte / k;
+
+	j=0;
+	for(i=0; i<n; i++)
+	{
+		if(diff_ris[j] + compito[i].difficolta > parte)
+		{	
+			j++;
+			if(j >= k)
+				break;
+		}
+
+		diff_ris[j] += compito[i].difficolta;
+		soluzione[i] = j;
+	}
+	
+	for(; i<n; i++)	//per gli elementi rimanenti
+	{
+		min = INT_MAX;
+		for(j=0; j<k; j++)	//cerco risorsa meno sfruttata
+		{
+			if(diff_ris[j] < min)
+			{
+				min = diff_ris[j];
+				min_index = j;
+			}
+		}
+		diff_ris[min_index] += compito[i].difficolta;
+		soluzione[i] = min_index;
+	}
+
+	//calcolo scarto tra risorsa piu usata e meno usata
+	min = INT_MAX;
+	max = -1;
+	for(j=0; j<k; j++)
+	{
+		if(diff_ris[j] > max)
+			max = diff_ris[j];
+		if(diff_ris[j] < min)
+			min = diff_ris[j];
+	}
+	*scarto_min = max - min;
 }
