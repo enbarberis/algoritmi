@@ -1,0 +1,15 @@
+job_1 	6
+job_2 	12
+job_3	7
+job_4 	8
+job_5 	6
+job_6	3
+job_7	8
+job_8	15
+job_9	6
+job_10	8
+job_11	4
+job_12	1
+job_13	2
+job_14	9
+job_15	7
