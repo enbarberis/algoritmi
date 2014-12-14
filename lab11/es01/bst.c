@@ -61,6 +61,56 @@ void bst_insert_leaf(BST bst, Item i)
 		p->right = x;
 }
 
+link r_rotation(link h)
+{
+	link x = h->left;
+	h->left = x->right;
+	x->right = h;
+	x->n = h->n;
+	h->n = 1;
+	if(h->right != NULL)
+		h->n += h->right->n;
+	if(h->left != NULL)
+		h->n += h->left->n;
+	return x;
+}
+
+link l_rotation(link h)
+{
+	link x = h->right;
+	h->right = x->left;
+	x->left = h;
+	x->n = h->n;
+	h->n = 1;
+	if(h->right != NULL)
+		h->n += h->right->n;
+	if(h->left != NULL)
+		h->n += h->left->n;
+	return x;
+}
+
+link root_insert(link h, Item i)
+{
+	if(h == NULL)
+		return new_node(i, NULL, NULL, 1);
+	if(item_compare(i, h->item) < 0)
+	{
+		h->left = root_insert(h->left, i);
+		h = r_rotation(h);
+	}
+	else
+	{
+		h->right = root_insert(h->right, i);
+		h = l_rotation(h);
+	}
+
+	return h;
+}
+
+void bst_insert_root(BST bst, Item i)
+{
+	bst->root = root_insert(bst->root, i);
+}
 
 Item bst_search(BST bst, Item i)
 {
@@ -81,6 +131,26 @@ Item bst_search(BST bst, Item i)
 			x = x->right;
 	}
 	return p->item;
+}
+
+void bst_print_min_max(BST bst)
+{
+	if(bst->root == NULL){
+		printf("Empty BST\n");
+		return;
+	}
+
+	link p = bst->root;
+	while(p->left != NULL)
+		p = p->left;
+	printf("MIN:\n");
+	item_print(p->item, stdout);
+	
+	p = bst->root;
+	while(p->right != NULL)
+		p = p->right;
+	printf("MAX:\n");
+	item_print(p->item, stdout);
 }
 
 void pre_order(link p, FILE *fp)
@@ -112,17 +182,65 @@ void post_order(link p, FILE *fp)
 
 void bst_print_pre_order(BST bst, FILE *fp)
 {
-	pre_order(bst->root, fp);
+	if(bst->root != NULL)
+		pre_order(bst->root, fp);
 }
 
 void bst_print_in_order(BST bst, FILE *fp)
 {
-	in_order(bst->root, fp);
+	if(bst->root != NULL)
+		in_order(bst->root, fp);
 }
 
 void bst_print_post_order(BST bst, FILE *fp)
 {
-	post_order(bst->root, fp);
+	if(bst->root != NULL)
+		post_order(bst->root, fp);
+}
+
+void height(link p, int level, int *max)
+{
+	if(level > *max)
+		*max = level;
+	if(p->left != NULL)
+		height(p->left, level+1, max);
+	if(p->right != NULL)
+		height(p->right, level+1, max);
+}
+
+int bst_tree_height(BST bst)
+{
+	if(bst->root == NULL)
+		return 0;
+	int max = 1;
+	height(bst->root, 1, &max);
+	return max;
+}
+
+int bst_root_size(BST bst)
+{
+	if(bst->root == NULL)
+		return 0;
+	return bst->root->n;
+}
+
+void leafs(link p, int *n)
+{
+	if(p->right == NULL && p->left == NULL)
+		(*n)++;
+	if(p->left != NULL)
+		leafs(p->left, n);
+	if(p->right != NULL)
+		leafs(p->right, n);
+}
+
+int bst_number_of_leafs(BST bst)
+{
+	if(bst->root == NULL)
+		return 0;
+	int n;
+	leafs(bst->root, &n);
+	return n;
 }
 
 void destroy(link p)
