@@ -82,3 +82,61 @@ Item bst_search(BST bst, Item i)
 	}
 	return p->item;
 }
+
+void pre_order(link p, FILE *fp)
+{
+	item_print(p->item, fp);
+	if(p->left != NULL)
+		pre_order(p->left, fp);
+	if(p->right != NULL)
+		pre_order(p->right, fp);
+}
+
+void in_order(link p, FILE *fp)
+{
+	if(p->left != NULL)
+		in_order(p->left, fp);
+	item_print(p->item, fp);
+	if(p->right != NULL)
+		in_order(p->right, fp);
+}
+
+void post_order(link p, FILE *fp)
+{
+	if(p->left != NULL)
+		post_order(p->left, fp);
+	if(p->right != NULL)
+		post_order(p->right, fp);
+	item_print(p->item, fp);
+}
+
+void bst_print_pre_order(BST bst, FILE *fp)
+{
+	pre_order(bst->root, fp);
+}
+
+void bst_print_in_order(BST bst, FILE *fp)
+{
+	in_order(bst->root, fp);
+}
+
+void bst_print_post_order(BST bst, FILE *fp)
+{
+	post_order(bst->root, fp);
+}
+
+void destroy(link p)
+{
+	if(p->left != NULL)
+		destroy(p->left);
+	if(p->right != NULL)
+		destroy(p->right);
+	item_free(p->item);
+}
+
+void bst_destroy(BST bst)
+{
+	if(bst->root != NULL)
+		destroy(bst->root);
+	free(bst);
+}

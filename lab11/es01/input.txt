@@ -1,0 +1,4 @@
+3 nodo1
+4 nodo2
+1 nodo3
+6 nodo4

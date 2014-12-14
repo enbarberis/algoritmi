@@ -42,7 +42,7 @@ Item item_new(int key, char *str)
 
 void item_print(Item a, FILE *fp)
 {
-	fprintf(fp,"%d %s\n", a->key, a->str);
+	fprintf(fp,"%d\t%s\n", a->key, a->str);
 }
 
 void item_free(Item a)
