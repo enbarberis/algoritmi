@@ -97,11 +97,13 @@ link root_insert(link h, Item i)
 	{
 		h->left = root_insert(h->left, i);
 		h = r_rotation(h);
+		h->n++;
 	}
 	else
 	{
 		h->right = root_insert(h->right, i);
 		h = l_rotation(h);
+		h->n++;
 	}
 
 	return h;
