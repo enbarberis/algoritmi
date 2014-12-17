@@ -1,0 +1,10 @@
+SILVER                   
+	CL023
+	CL231
+GOLD                     
+	CL123
+	CL000
+BRONZE                   
+	CL890
+	CL590
+	CL734

@@ -1,0 +1,7 @@
+CL590                     Nero                      Franco                    BRONZE                             1      13123       2012
+CL734                     Rossi                     Mario                     BRONZE                             0          0          0
+CL000                     Barberis                  Enrico                    GOLD                               2       2048         25
+CL890                     Maria                     Mario                     BRONZE                             1      20141       1203
+CL023                     Rossi                     Lucia                     SILVER                             1      12341       1200
+CL123                     Dario                     Lampa                     GOLD                               0          0          0
+CL231                     Barberis                  Luca                      SILVER                             1     101241       3600

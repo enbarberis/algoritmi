@@ -1,0 +1,7 @@
+CL000	Enrico	Barberis	GOLD
+CL231	Luca	Barberis	SILVER
+CL734	Mario	Rossi		BRONZE
+CL023	Lucia	Rossi		SILVER
+CL123	Lampa	Dario		GOLD
+CL590	Franco	Nero		BRONZE
+CL890	Mario	Maria		BRONZE
