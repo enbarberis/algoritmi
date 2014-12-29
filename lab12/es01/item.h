@@ -1,7 +1,7 @@
 #ifndef ITEM_H_DEFINED
 #define ITEM_H_DEFINED
 
-#define	MAX_STR 11
+#define	MAX_STR 21
 #define BASE	127
 typedef struct item *Item;
 
