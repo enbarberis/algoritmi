@@ -15,9 +15,11 @@ struct graph{
 	int n;		//number of nodes
 	int e;		//number of edges
 	link *adj;	//array of adjacent nodes
+	link *tra;	//trasposed graph
 	int *distance;	//distance[i] = distance of i from the start node of the visit
 	int *parent;	//parent[i] = parent during the visit of i
 	int *visited;	//if visited[i] == 1 then i is visited
+	int *scc;	//scc[i] = "group" name of strongly connected component of i
 };
 
 edge create_edge(int a, int b)
@@ -43,9 +45,11 @@ Graph graph_init(int n)
 	g->n = n;
 	g->e = 0;
 	g->adj = malloc(n*sizeof(link));
+	g->tra = malloc(n*sizeof(link));
 	g->distance = malloc(n*sizeof(int));
 	g->parent   = malloc(n*sizeof(int));
 	g->visited  = malloc(n*sizeof(int));
+	g->scc      = malloc(n*sizeof(int));
 	for(i=0; i<n; i++)
 		g->adj[i] = NULL;
 	return g;
@@ -54,6 +58,7 @@ Graph graph_init(int n)
 void graph_insert(Graph g, edge e)
 {
 	g->adj[e.a] = new_link(e.b, g->adj[e.a]);
+	g->tra[e.b] = new_link(e.a, g->tra[e.b]); //direct creation of transposed graph
 	g->e++;
 }
 
@@ -89,6 +94,8 @@ int graph_get_shortest_path(Graph g, int start, int end, int **path)
 			adj_node = adj_node->next;
 		}
 	}
+
+	queue_destroy(q);
 
 	//does exist a path?
 	if(g->distance[end] == -1)
@@ -183,4 +190,79 @@ int graph_number_of_simple_path(Graph g, int start, int end)
 	for(i=0; i<g->n; i++)
 		g->visited[i] = 0;	//not visited
 	return path_ric(g, start, end);
+}
+
+void dfs(Graph g, int pos, int *time)
+{
+	(*time)++;
+	g->visited[pos] = 1;
+	link adj_node = g->tra[pos];
+	while(adj_node != NULL)
+	{
+		if(g->visited[adj_node->v] == 0) 	//if not visited
+			dfs(g, adj_node->v, time);
+		adj_node = adj_node->next;
+	}
+	g->distance[pos] = (*time)++;
+}
+
+void dfs_assign(Graph g, int pos, int val)
+{
+	g->visited[pos] = 1;
+	g->scc[pos] = val;
+	link adj_node = g->adj[pos];
+	while(adj_node != NULL)
+	{	
+		if(g->visited[adj_node->v] == 0)
+			dfs_assign(g, adj_node->v, val);
+
+		adj_node = adj_node->next;
+	}
+}
+
+void calculate_scc(Graph g)
+{
+	int i, time=0, max, c, pos, visited;
+
+	//reset
+	for(i=0; i<g->n; i++)
+	{
+		g->visited[i] = 0;
+		g->distance[i] = 0;	//distance = post time of elaboration
+	}
+
+	//dfs on transposed graph
+	for(i=0; i<g->n; i++)
+	{
+		if(g->visited[i] == 0)	//if not visited yet
+		{
+			dfs(g, i, &time);
+		}
+	}
+
+	//re-reset
+	for(i=0; i<g->n; i++)
+		g->visited[i] = 0;
+
+	//ssc value assignment
+	c = 0;
+	visited = 0;
+
+	while(visited < g->n)
+	{
+		//searching node with max post value and not visited yet
+		max = pos =-1;
+		for(i=0; i<g->n; i++)
+			if(g->distance[i] > max && g->visited[i] == 0)
+			{
+				pos = i;
+				max = g->distance[i];
+			}
+		dfs_assign(g, pos, c++);
+		
+		//recalculate all visited nodes
+		for(i = visited = 0; i<g->n; i++)
+			if(g->visited[i])
+				visited++;
+	}
 }
