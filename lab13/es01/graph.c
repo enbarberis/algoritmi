@@ -1,0 +1,186 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include "graph.h"
+#include "queue.h"
+
+//ADJACENT LIST STRUCT
+typedef struct node *link;
+struct node{
+	int v;		//adjacent node
+	link next;	//link to the next adjacent node
+};
+
+//GRAPH STRUCT
+struct graph{
+	int n;		//number of nodes
+	int e;		//number of edges
+	link *adj;	//array of adjacent nodes
+	int *distance;	//distance[i] = distance of i from the start node of the visit
+	int *parent;	//parent[i] = parent during the visit of i
+	int *visited;	//if visited[i] == 1 then i is visited
+};
+
+edge create_edge(int a, int b)
+{
+	edge e;
+	e.a = a;
+	e.b = b;
+	return e;
+}
+
+link new_link(int v, link next)
+{
+	link new = malloc(sizeof(*new));
+	new->v = v;
+	new->next = next;
+	return new;
+}
+
+Graph graph_init(int n)
+{
+	int i;
+	Graph g = malloc(sizeof(*g));
+	g->n = n;
+	g->e = 0;
+	g->adj = malloc(n*sizeof(link));
+	g->distance = malloc(n*sizeof(int));
+	g->parent   = malloc(n*sizeof(int));
+	g->visited  = malloc(n*sizeof(int));
+	for(i=0; i<n; i++)
+		g->adj[i] = NULL;
+	return g;
+}
+
+void graph_insert(Graph g, edge e)
+{
+	g->adj[e.a] = new_link(e.b, g->adj[e.a]);
+	g->e++;
+}
+
+int graph_get_shortest_path(Graph g, int start, int end, int **path)
+{
+	//reset
+	int i;
+	for(i=0; i<g->n; i++)
+	{
+		g->distance[i] = -1;
+		g->parent[i] = -1;
+	}
+	g->distance[start] = 0;
+	
+	//bfs visit
+	Queue q = queue_init();
+	int v;
+	link adj_node;
+
+	queue_put(q, start);
+	while(!queue_empty(q))
+	{
+		v = queue_get(q);
+		adj_node = g->adj[v];
+		while(adj_node != NULL)		//for every adjacent node
+		{
+			if(g->distance[adj_node->v] == -1)	//if not visited yet
+			{
+				g->parent[adj_node->v] = v;
+				g->distance[adj_node->v] = g->distance[v] + 1;
+				queue_put(q, adj_node->v);
+			}
+			adj_node = adj_node->next;
+		}
+	}
+
+	//does exist a path?
+	if(g->distance[end] == -1)
+		return -1;
+
+	//path saving
+	int* p = malloc((g->distance[end] + 1) * sizeof(int));	//path array
+	int c = g->distance[end] - 1;
+	v = end;
+	p[g->distance[end]] = end;
+	while(v != start)
+	{
+		v = g->parent[v];
+		p[c--] = v;
+	}
+	*path = p;
+	return g->distance[end];
+}
+
+void path_max(Graph g, int pos, int end, int *max, int *path)
+{
+	//if the actual solution is better
+	if(pos == end && g->distance[end] > *max)
+	{
+		*max = g->distance[end];	//max distance save
+		int c = g->distance[end] - 1;
+		int v = end;			
+		path[g->distance[end]] = end;	//path save
+		while(v != -1 && c>=0)
+		{
+			v = g->parent[v];
+			path[c--] = v;
+		}	
+	}
+	else
+	{
+		g->visited[pos] = 1;		//mark as visited
+		link adj_node = g->adj[pos];
+		while(adj_node != NULL)		//for every adj. node
+		{
+			if(g->visited[adj_node->v] == 0)	//if it isn't visited
+			{
+				g->parent[adj_node->v] = pos;
+				g->distance[adj_node->v] = g->distance[pos] + 1;
+				path_max(g, adj_node->v, end, max, path);	
+			}
+			adj_node = adj_node->next;
+		}
+		g->visited[pos] = 0;		//mark as not visisted
+	}
+}
+
+int graph_get_longest_path(Graph g, int start, int end, int **path)
+{
+	//reset
+	int i;
+	for(i=0; i<g->n; i++)
+	{
+		g->distance[i] = 0;
+		g->visited[i] = 0;
+		g->parent[i] = -1;
+	}
+	//max path calculation
+	i=-1;
+	int *p = malloc(g->n * sizeof(int));
+	path_max(g, start, end, &i, p);
+	*path = p;
+	return i;
+}
+
+int path_ric(Graph g, int pos, int end)
+{
+	if(pos == end)
+		return 1;	//if I found a path then return 1
+	
+	g->visited[pos] = 1;	//mark as visited
+	int sum = 0;
+	link adj_node = g->adj[pos];
+	while(adj_node != NULL)
+	{
+		if(g->visited[adj_node->v] == 0)
+			sum += path_ric(g, adj_node->v, end);
+		adj_node = adj_node->next;
+	}
+	g->visited[pos] = 0;	//mark as not visited
+	return sum;
+}
+
+int graph_number_of_simple_path(Graph g, int start, int end)
+{
+	int i;
+	for(i=0; i<g->n; i++)
+		g->visited[i] = 0;	//not visited
+	return path_ric(g, start, end);
+}
