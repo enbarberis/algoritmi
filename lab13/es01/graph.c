@@ -220,7 +220,7 @@ void dfs_assign(Graph g, int pos, int val)
 	}
 }
 
-void calculate_scc(Graph g)
+int* graph_get_scc(Graph g)
 {
 	int i, time=0, max, c, pos, visited;
 
@@ -264,5 +264,35 @@ void calculate_scc(Graph g)
 		for(i = visited = 0; i<g->n; i++)
 			if(g->visited[i])
 				visited++;
+	}
+	return g->scc;
+}
+
+void graph_destroy(Graph g)
+{
+	free(g->distance);
+	free(g->parent);
+	free(g->visited);
+	free(g->scc);
+
+	link adj_node, tmp;
+	int i;
+	for(i=0; i<g->n; i++)
+	{
+		adj_node = g->adj[i];
+		while(adj_node != NULL)
+		{
+			tmp = adj_node->next;
+			free(adj_node);
+			adj_node = tmp;
+		}
+
+		adj_node = g->tra[i];
+		while(adj_node != NULL)
+		{
+			tmp = adj_node->next;
+			free(adj_node);
+			adj_node = tmp;
+		}
 	}
 }

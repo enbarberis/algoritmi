@@ -3,11 +3,11 @@
 #include "hash_table.h"
 #include "graph.h"
 
-#define MAX_STR 10 + 1
+#define MAX_STR 12 + 1
 
 int main(int argc, char **argv)
 {
-	int n, a, b, choice, ris, i;
+	int n, a, b, choice, ris, i, j;
 	int *path;
 	char tmp1[MAX_STR], tmp2[MAX_STR];
 	Hash_table ht;
@@ -106,11 +106,29 @@ int main(int argc, char **argv)
 				else
 					printf("Error, inexistent nodes\n");
 			break;
+			case 4:
+				path = graph_get_scc(g);
+				//for every scc group
+				for(i=0; i<n; i++)
+				{
+					a = 0;	//counter
+					for(j=0; j<n; j++)
+						if(path[j] == i)
+						{
+							printf("%s\n", hash_table_get_name(ht, j));
+							a++;
+						}
+					if(a != 0)
+						printf("============\n");
+					else
+						break;
+				}
+			break;
 		}
 	}while(choice != 6);
 
 	hash_table_destroy(ht);
-	//TODO destroy graph
+	graph_destroy(g);
 
 	return 0;
 }
